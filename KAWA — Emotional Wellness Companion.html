@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8"><title>KAWA — Emotional Wellness Companion</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com/3.4.17"></script>
+<script>tailwind.config={theme:{extend:{colors:{beige:'#F5EFE3',royal:'#243D8F',burg:'#800020'},fontFamily:{serif:['Fraunces','Georgia','serif'],sans:['Inter','system-ui','sans-serif']}}}}</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.26.4/babel.min.js"></script>
+<style>
+:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{background:#F5EFE3;color:#243D8F;font-family:Inter,system-ui,sans-serif}
+h1,h2,h3{font-family:Fraunces,Georgia,serif}
+.page{animation:fade .35s ease}@keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.bar{animation:wave 1s ease-in-out infinite;transform-origin:center}@keyframes wave{50%{transform:scaleY(.3)}}
+.pulse{animation:pulse 2.4s ease-out infinite}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(36,61,143,.35)}100%{box-shadow:0 0 0 36px rgba(36,61,143,0)}}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid #800020;outline-offset:2px}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+</style></head>
+<body><div id="root"></div>
+<script type="text/babel" data-presets="react">
+const {useState,useEffect,useRef}=React;
+const P={home:'M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1z',chat:'M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-5.4A8 8 0 1 1 21 12z',phone:'M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z',smile:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM8 14s1.5 2 4 2 4-2 4-2M9 9h.01M15 9h.01',users:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8',compass:'M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zM16 8l-2 6-6 2 2-6z',music:'M9 18V5l12-2v13M6 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 19a3 3 0 1 0 0-6 3 3 0 0 0 0 6z',heart:'M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 21l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z',bell:'M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9M13.7 21a2 2 0 0 1-3.4 0',shield:'M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z',user:'M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8',mic:'M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3zM19 10v2a7 7 0 0 1-14 0v-2M12 19v4',play:'M5 3l14 9-14 9z',pause:'M6 4h4v16H6zM14 4h4v16h-4z',send:'M22 2L11 13M22 2l-7 20-4-9-9-4z',x:'M18 6L6 18M6 6l12 12',pin:'M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0zM12 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6',menu:'M3 12h18M3 6h18M3 18h18',vol:'M11 5L6 9H2v6h4l5 4zM15.5 8.5a5 5 0 0 1 0 7',act:'M22 12h-4l-3 9L9 3l-3 9H2',route:'M4 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM20 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM6 17h8a3 3 0 0 0 0-6h-4a3 3 0 0 1 0-6h8',check:'M20 6L9 17l-5-5'};
+const I=({n,s=20,c=''})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={c} aria-hidden="true"><path d={P[n]}/></svg>;
+const Card=({children,c='',...r})=><div className={'bg-white/60 border border-royal/10 rounded-3xl p-5 shadow-[0_6px_24px_-12px_rgba(36,61,143,.25)] '+c} {...r}>{children}</div>;
+const Btn=({children,v='p',c='',...r})=><button className={'rounded-full px-5 py-2.5 text-sm font-medium transition active:scale-95 inline-flex items-center justify-center gap-2 '+(v=='p'?'bg-royal text-beige hover:bg-royal/90':v=='b'?'bg-burg text-beige hover:bg-burg/90':'border border-royal/30 text-royal hover:bg-royal/10')+' '+c} {...r}>{children}</button>;
+const Chip=({on,children,...r})=><button className={'rounded-full px-4 py-1.5 text-sm border transition '+(on?'bg-burg border-burg text-beige':'border-royal/25 text-royal hover:bg-royal/10')} {...r}>{children}</button>;
+const Tog=({on,set,label})=><button role="switch" aria-checked={on} aria-label={label} onClick={()=>set(!on)} className={'w-11 h-6 rounded-full relative transition '+(on?'bg-burg':'bg-royal/25')}><span className={'absolute top-0.5 w-5 h-5 rounded-full bg-beige transition-all '+(on?'left-5':'left-0.5')}/></button>;
+const Sim=({t='Simulated demo data'})=><span className="text-xs rounded-full bg-burg/10 text-burg px-3 py-1 font-medium">{t}</span>;
+const H=({t,sub,r})=><div className="flex flex-wrap items-end justify-between gap-3 mb-6"><div><h1 className="text-3xl md:text-4xl font-semibold">{t}</h1>{sub&&<p className="mt-1 text-royal/70">{sub}</p>}</div>{r}</div>;
+
+const NAV=[['home','Home','home'],['chat','Companion','chat'],['voice','Voice call','phone'],['mood','Mood','smile'],['community','Community','users'],['journeys','Journeys','route'],['music','Music','music'],['health','Health','act'],['alerts','Alerts','bell'],['care','Care Circle','shield'],['profile','Profile & Settings','user']];
+
+/* ---------- pages ---------- */
+function Landing({go}){const f=[['chat','AI companion','Gentle, always-available conversation.'],['users','Real-life connection','Nearby meetups and interest groups.'],['smile','Mood tracking','Notice patterns in how you feel.'],['act','Wellness signals','Wearable-style insights, clearly simulated.']];
+return <div className="page max-w-6xl mx-auto px-5 py-8">
+<nav className="flex items-center justify-between"><span className="font-serif text-2xl font-semibold tracking-wide">KAWA</span><Btn onClick={()=>go('home')}>Open prototype</Btn></nav>
+<section className="py-16 md:py-24 grid md:grid-cols-2 gap-10 items-center"><div>
+<Sim t="Interactive prototype — mock data only"/><h1 className="text-5xl md:text-6xl font-semibold leading-tight mt-5">You are not alone in this.</h1>
+<p className="mt-5 text-lg text-royal/75 max-w-md">KAWA is a warm companion for moments of loneliness and stress — and a nudge toward the real people and routines that help you feel well.</p>
+<div className="mt-8 flex gap-3 flex-wrap"><Btn onClick={()=>go('home')}>Start your day</Btn><Btn v="o" onClick={()=>go('community')}>Find people nearby</Btn></div></div>
+<div className="relative aspect-square max-w-md mx-auto w-full"><div className="absolute inset-0 rounded-[3rem] bg-royal rotate-3"/><div className="absolute inset-0 rounded-[3rem] bg-beige border border-royal/20 -rotate-2 grid place-items-center"><div className="w-40 h-40 rounded-full bg-burg pulse grid place-items-center text-beige font-serif text-6xl">K</div></div></div></section>
+<section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">{f.map(([i,t,d])=><Card key={t}><div className="w-11 h-11 rounded-2xl bg-royal text-beige grid place-items-center"><I n={i}/></div><h3 className="mt-4 text-xl font-semibold">{t}</h3><p className="text-sm text-royal/70 mt-1">{d}</p></Card>)}</section>
+<p className="mt-12 text-xs text-royal/60 max-w-2xl">KAWA is a wellness companion, not a medical device or a substitute for professional care. In an emergency contact your local emergency number.</p></div>}
+
+function Home({go,mood,setMood}){const m=['Low','Uneasy','Okay','Good','Great'];
+return <div className="page"><H t="Good morning, Asha" sub="Take a breath. Here is your day." r={<Sim/>}/>
+<div className="grid lg:grid-cols-3 gap-5">
+<Card c="lg:col-span-2"><h3 className="text-xl font-semibold">How are you feeling?</h3><div className="flex flex-wrap gap-2 mt-4">{m.map(x=><Chip key={x} on={mood==x} onClick={()=>setMood(x)}>{x}</Chip>)}</div>
+<p className="mt-4 text-sm text-royal/70">{mood?`Thanks for checking in. You said “${mood}”.`:'Choose one — no wrong answers.'}</p>{mood&&<Btn v="b" c="mt-3" onClick={()=>go('chat')}>Talk about it</Btn>}</Card>
+<Card c="!bg-royal !text-beige"><p className="text-xs uppercase tracking-widest opacity-70">Daily affirmation</p><p className="font-serif text-2xl mt-3">Small steps still count as moving forward.</p></Card>
+{[['Sleep','7h 12m'],['Resting HR','62 bpm'],['Stress','Low-moderate']].map(([a,b])=><Card key={a}><p className="text-sm text-royal/60">{a} <span className="text-burg text-xs">(simulated)</span></p><p className="font-serif text-3xl mt-1">{b}</p></Card>)}</div>
+<h2 className="text-2xl font-semibold mt-10 mb-4">Quick actions</h2>
+<div className="grid grid-cols-2 md:grid-cols-4 gap-3">{[['chat','Chat','chat'],['voice','Voice call','phone'],['journeys','Breathe','route'],['community','Meet up','users']].map(([p,t,i])=><button key={p} onClick={()=>go(p)} className="rounded-3xl bg-white/60 border border-royal/10 p-5 text-left hover:-translate-y-0.5 hover:shadow-lg transition"><I n={i} c="text-burg"/><p className="mt-3 font-medium">{t}</p></button>)}</div>
+<h2 className="text-2xl font-semibold mt-10 mb-4">Recent activity</h2><Card><ul className="divide-y divide-royal/10 text-sm">{['Completed “Evening wind-down” (yesterday)','Logged mood: Good (2 days ago)','RSVP’d to Sunday Park Walk'].map(x=><li key={x} className="py-3">{x}</li>)}</ul></Card></div>}
+
+const REPL=['That sounds heavy. I’m here — what part of it is weighing on you most?','Thank you for telling me. Would a two-minute breathing exercise help, or would you rather keep talking?','It makes sense to feel that way. Is there one person you could send a small hello to today?'];
+function Chat(){const [msgs,setM]=useState([{r:'k',t:'Hi Asha, I’m KAWA. How is your day going?'}]);const [v,setV]=useState('');const [typ,setT]=useState(false);const end=useRef();
+useEffect(()=>{end.current&&end.current.scrollIntoView({behavior:'smooth'})},[msgs,typ]);
+const send=()=>{if(!v.trim())return;setM(m=>[...m,{r:'u',t:v}]);setV('');setT(true);setTimeout(()=>{setT(false);setM(m=>[...m,{r:'k',t:REPL[m.length%3]}])},1100)};
+return <div className="page"><H t="Companion" sub="Demo conversation — replies are scripted, not a live AI." r={<Sim t="Scripted demo"/>}/>
+<div className="grid lg:grid-cols-4 gap-5"><Card c="hidden lg:block"><h3 className="font-semibold mb-3">History</h3>{['Today','Yesterday','Sunday: nerves before work'].map(x=><p key={x} className="text-sm py-2 border-b border-royal/10 text-royal/70">{x}</p>)}</Card>
+<Card c="lg:col-span-3 flex flex-col h-[60vh]"><div className="flex-1 overflow-y-auto space-y-3 pr-1" aria-live="polite">{msgs.map((m,i)=><div key={i} className={'max-w-[80%] rounded-2xl px-4 py-2.5 text-sm '+(m.r=='u'?'ml-auto bg-royal text-beige':'bg-beige border border-royal/10')}>{m.t}</div>)}{typ&&<div className="text-sm text-royal/60">KAWA is typing…</div>}<div ref={end}/></div>
+<div className="flex gap-2 mt-4"><input value={v} onChange={e=>setV(e.target.value)} onKeyDown={e=>e.key=='Enter'&&send()} placeholder="Say anything…" aria-label="Message" className="flex-1 rounded-full bg-beige border border-royal/20 px-5 py-2.5 text-sm"/><Btn onClick={send} aria-label="Send"><I n="send" s={16}/></Btn></div></Card></div></div>}
+
+function Voice(){const [on,setOn]=useState(false);const [t,setT]=useState(0);const [mute,setMute]=useState(false);const [spk,setSpk]=useState(true);
+useEffect(()=>{if(!on)return;const i=setInterval(()=>setT(x=>x+1),1000);return()=>clearInterval(i)},[on]);
+const f=`${String(Math.floor(t/60)).padStart(2,'0')}:${String(t%60).padStart(2,'0')}`;
+return <div className="page max-w-md mx-auto text-center"><Sim t="UI simulation — no real call or audio"/>
+<div className="mt-8 mx-auto w-40 h-40 rounded-full bg-royal grid place-items-center text-beige font-serif text-6xl ${''}" style={on?{animation:'pulse 2.4s ease-out infinite'}:{}}>K</div>
+<h1 className="text-3xl font-semibold mt-6">KAWA</h1><p className="text-royal/70">{on?(mute?'You are muted':'Listening…'):'Ready when you are'}</p><p className="font-serif text-4xl mt-2">{on?f:'00:00'}</p>
+<div className="flex justify-center items-center gap-1 h-16 my-6">{Array.from({length:24}).map((_,i)=><span key={i} className="bar w-1.5 h-12 rounded-full bg-burg" style={{animationDelay:i*70+'ms',animationPlayState:on&&!mute?'running':'paused',transform:on?undefined:'scaleY(.15)'}}/>)}</div>
+<div className="flex justify-center gap-4">{on?<><button onClick={()=>setMute(!mute)} aria-pressed={mute} aria-label="Mute" className={'w-14 h-14 rounded-full grid place-items-center border '+(mute?'bg-burg text-beige border-burg':'border-royal/30')}><I n="mic"/></button>
+<button onClick={()=>{setOn(false);setT(0)}} aria-label="End call" className="w-14 h-14 rounded-full bg-burg text-beige grid place-items-center"><I n="phone" c="rotate-[135deg]"/></button>
+<button onClick={()=>setSpk(!spk)} aria-pressed={spk} aria-label="Speaker" className={'w-14 h-14 rounded-full grid place-items-center border '+(spk?'bg-royal text-beige border-royal':'border-royal/30')}><I n="vol"/></button></>:<Btn onClick={()=>setOn(true)}><I n="phone" s={16}/>Start demo call</Btn>}</div></div>}
+
+function Mood({log,setLog}){const [s,setS]=useState('');const [n,setN]=useState('');const M={Low:1,Uneasy:2,Okay:3,Good:4,Great:5};const d=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];const wk=[3,2,3,4,3,4,5];
+return <div className="page"><H t="Mood tracker" sub="Notice, name, and gently track how you feel."/>
+<div className="grid lg:grid-cols-2 gap-5"><Card><h3 className="text-xl font-semibold">Check in</h3><div className="flex flex-wrap gap-2 mt-4">{Object.keys(M).map(x=><Chip key={x} on={s==x} onClick={()=>setS(x)}>{x}</Chip>)}</div>
+<textarea value={n} onChange={e=>setN(e.target.value)} placeholder="Anything you want to note? (optional)" aria-label="Note" className="mt-4 w-full rounded-2xl bg-beige border border-royal/20 p-3 text-sm" rows="3"/><Btn v="b" c="mt-3" onClick={()=>{if(s){setLog([{d:'Today',m:s,n},...log]);setS('');setN('')}}}>Save check-in</Btn></Card>
+<Card><h3 className="text-xl font-semibold">This week</h3><div className="flex items-end gap-3 h-40 mt-4">{wk.map((v,i)=><div key={i} className="flex-1 flex flex-col items-center gap-1"><div className="w-full rounded-t-xl bg-royal" style={{height:v*20+'%'}}/><span className="text-xs text-royal/60">{d[i]}</span></div>)}</div></Card></div>
+<h2 className="text-2xl font-semibold mt-8 mb-3">History</h2>{log.length?<Card><ul className="divide-y divide-royal/10">{log.map((l,i)=><li key={i} className="py-3 flex justify-between text-sm"><span><b className="text-burg">{l.m}</b> {l.n&&'— '+l.n}</span><span className="text-royal/60">{l.d}</span></li>)}</ul></Card>:<Card>No check-ins yet.</Card>}</div>}
+
+const EV=[{id:1,t:'Sunday Park Walk',c:'Outdoors',w:'Sun, 8:00 AM',p:'Lodhi Garden',g:14,d:'A slow, no-pressure group walk followed by chai.'},{id:2,t:'Book Club Circle',c:'Books',w:'Wed, 6:30 PM',p:'Community Library',g:9,d:'Short readings and relaxed conversation. Newcomers welcome.'},{id:3,t:'Pottery for Beginners',c:'Creative',w:'Sat, 11:00 AM',p:'Studio Mitti',g:6,d:'Hands-on clay session; all materials provided.'},{id:4,t:'Board Game Evening',c:'Games',w:'Fri, 7:00 PM',p:'Café Hearth',g:12,d:'Easy games, easy company.'}];
+function Community(){const [f,setF]=useState('All');const [o,setO]=useState(null);const [rs,setRs]=useState({});const cats=['All',...new Set(EV.map(e=>e.c))];
+return <div className="page"><H t="Real-life community" sub="Sample events — demo listings, not real." r={<Sim t="Sample listings"/>}/>
+<div className="flex flex-wrap gap-2 mb-5">{cats.map(c=><Chip key={c} on={f==c} onClick={()=>setF(c)}>{c}</Chip>)}</div>
+<div className="grid md:grid-cols-2 gap-4">{EV.filter(e=>f=='All'||e.c==f).map(e=><Card key={e.id}><span className="text-xs rounded-full bg-burg text-beige px-3 py-1">{e.c}</span><h3 className="text-xl font-semibold mt-3">{e.t}</h3><p className="text-sm text-royal/70 mt-1 flex items-center gap-1"><I n="pin" s={14}/>{e.p} · {e.w}</p><div className="flex items-center justify-between mt-4"><span className="text-sm">{e.g+(rs[e.id]?1:0)} going</span><Btn v="o" onClick={()=>setO(e)}>Details</Btn></div></Card>)}</div>
+{o&&<Modal close={()=>setO(null)} title={o.t}><p className="text-sm text-royal/80">{o.d}</p><p className="text-sm mt-3"><b>Where:</b> {o.p}<br/><b>When:</b> {o.w}</p><p className="text-xs text-royal/60 mt-3">Meet in public places and tell a trusted contact where you’re going.</p><Btn v={rs[o.id]?'o':'b'} c="mt-5" onClick={()=>setRs({...rs,[o.id]:!rs[o.id]})}>{rs[o.id]?'Going ✓ (tap to cancel)':'RSVP'}</Btn></Modal>}</div>}
+
+function Modal({title,close,children}){useEffect(()=>{const k=e=>e.key=='Escape'&&close();addEventListener('keydown',k);return()=>removeEventListener('keydown',k)},[]);
+return <div className="fixed inset-0 z-50 bg-royal/40 grid place-items-center p-4" onClick={close}><div role="dialog" aria-modal="true" aria-label={title} onClick={e=>e.stopPropagation()} className="page bg-beige rounded-3xl p-6 max-w-md w-full shadow-2xl"><div className="flex justify-between items-start mb-3"><h2 className="text-2xl font-semibold">{title}</h2><button onClick={close} aria-label="Close"><I n="x"/></button></div>{children}</div></div>}
+
+const JR=[['Stress reset',['Box breathing, 2 min','Name 3 worries','Short stretch']],['Mindful morning',['Phone-free first 10 min','Gratitude line','Slow tea']],['Social confidence',['Text one friend','Say hi to a neighbour','Join one event']]];
+function Journeys(){const [d,setD]=useState({});return <div className="page"><H t="Wellness journeys" sub="Tiny daily routines that add up."/>
+<div className="grid md:grid-cols-3 gap-4">{JR.map(([t,s])=>{const n=s.filter((_,i)=>d[t+i]).length;return <Card key={t}><h3 className="text-xl font-semibold">{t}</h3><div className="h-2 rounded-full bg-royal/10 mt-3"><div className="h-2 rounded-full bg-burg transition-all" style={{width:n/s.length*100+'%'}}/></div>
+<ul className="mt-4 space-y-2">{s.map((x,i)=><li key={i}><label className="flex items-center gap-3 text-sm cursor-pointer"><input type="checkbox" className="accent-[#800020] w-4 h-4" checked={!!d[t+i]} onChange={()=>setD({...d,[t+i]:!d[t+i]})}/>{x}</label></li>)}</ul></Card>})}</div></div>}
+
+const TR=[['Rain on leaves','Nature'],['Ocean shore','Nature'],['Soft piano','Calm'],['Deep focus drone','Focus'],['Night forest','Sleep']];
+function Music({cur,setCur,pl,setPl}){const [c,setC]=useState('All');const cats=['All','Nature','Calm','Focus','Sleep'];
+return <div className="page"><H t="Ambient music" sub="Playback is simulated — no audio files are bundled in this prototype." r={<Sim t="No real audio"/>}/>
+<div className="flex flex-wrap gap-2 mb-5">{cats.map(x=><Chip key={x} on={c==x} onClick={()=>setC(x)}>{x}</Chip>)}</div>
+<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{TR.filter(t=>c=='All'||t[1]==c).map(t=><Card key={t[0]} c="flex items-center justify-between"><div><h3 className="font-semibold">{t[0]}</h3><p className="text-sm text-royal/60">{t[1]}</p></div><button aria-label={'Play '+t[0]} onClick={()=>{setCur(t[0]);setPl(true)}} className="w-11 h-11 rounded-full bg-royal text-beige grid place-items-center"><I n="play" s={16}/></button></Card>)}</div></div>}
+
+function Line({d,w=300,h=90}){const mx=Math.max(...d),mn=Math.min(...d);const pts=d.map((v,i)=>`${i*(w/(d.length-1))},${h-8-(v-mn)/(mx-mn||1)*(h-16)}`).join(' ');return <svg viewBox={`0 0 ${w} ${h}`} className="w-full" role="img" aria-label="Trend chart"><polyline points={pts} fill="none" stroke="#243D8F" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/><circle cx={w} cy={h-8-(d[d.length-1]-mn)/(mx-mn||1)*(h-16)} r="5" fill="#800020"/></svg>}
+function Health(){const M=[['Heart rate','64 bpm',[62,66,63,70,65,61,64]],['Sleep','7h 12m',[6.5,7,6.2,7.4,7.1,8,7.2]],['Recovery','71%',[60,65,58,70,72,68,71]],['Stress','Low-mod',[40,35,50,38,33,45,36]],['Activity','6,420 steps',[4,6,3,8,7,5,6.4]],['SpO₂','97%',[97,98,97,96,97,98,97]]];
+return <div className="page"><H t="Health dashboard" sub="Wearable-style insights from sample data." r={<Sim t="Simulated — no device connected"/>}/>
+<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">{M.map(([a,b,d])=><Card key={a}><p className="text-sm text-royal/60">{a}</p><p className="font-serif text-3xl">{b}</p><Line d={d}/></Card>)}</div>
+<p className="text-xs text-royal/60 mt-6">Not a medical device. Values are generated demo data and cannot detect or diagnose any condition.</p></div>}
+
+function Alerts(){return <div className="page"><H t="Health alerts" sub="Gentle insights — never a diagnosis." r={<Sim/>}/>
+<div className="grid md:grid-cols-2 gap-4">{[['Elevated resting HR','Moderate','Resting heart rate ran a little higher than your 7-day average. Poor sleep and caffeine can contribute.','Try a short breathing session and hydrate.'],['Short sleep streak','Low','Two nights under 6.5 hours.','Consider an earlier wind-down tonight.']].map(([t,l,d,a])=><Card key={t}><div className="flex justify-between"><h3 className="text-xl font-semibold">{t}</h3><span className={'text-xs rounded-full px-3 py-1 h-fit '+(l=='Moderate'?'bg-burg text-beige':'bg-royal/10')}>{l}</span></div><p className="text-sm mt-3 text-royal/80">{d}</p><p className="text-sm mt-2 font-medium">Suggested: {a}</p></Card>)}</div>
+<h2 className="text-2xl font-semibold mt-8 mb-3">Sensor status</h2><Card><ul className="text-sm divide-y divide-royal/10">{['Wearable band — not connected','Phone motion sensors — simulated','Location — off'].map(x=><li key={x} className="py-2.5">{x}</li>)}</ul></Card>
+<p className="text-xs text-royal/60 mt-4">If you feel unwell or unsafe, contact local emergency services. KAWA cannot do this for you.</p></div>}
+
+function Care(){const [loc,setLoc]=useState(false);const [auto,setAuto]=useState(false);const [m,setM]=useState(false);
+return <div className="page"><H t="Care Circle" sub="People you trust, and how they’d be reached." r={<Sim t="Prototype — no messages are sent"/>}/>
+<div className="grid md:grid-cols-2 gap-5"><Card><h3 className="text-xl font-semibold mb-3">Trusted contacts</h3>{[['Meera (sister)','Pending invite'],['Dr. Rao','Not notified']].map(([a,b])=><div key={a} className="flex justify-between py-2.5 border-b border-royal/10 text-sm"><span>{a}</span><span className="text-burg">{b}</span></div>)}</Card>
+<Card><h3 className="text-xl font-semibold mb-3">Consent & permissions</h3>{[['Share location during an alert',loc,setLoc],['Allow alerts to notify my circle',auto,setAuto]].map(([l,v,s])=><div key={l} className="flex justify-between items-center py-2.5 text-sm"><span>{l}</span><Tog on={v} set={s} label={l}/></div>)}<Btn v="b" c="mt-3" onClick={()=>setM(true)}>Preview an alert</Btn></Card></div>
+{m&&<Modal title="Alert preview" close={()=>setM(false)}><p className="text-sm">This is a preview only. No notification or location was sent — emergency delivery requires a real, tested backend integration that this prototype doesn’t have.</p><p className="text-sm mt-3 font-medium">In an emergency, call your local emergency number.</p></Modal>}</div>}
+
+function Profile(){const [s,set]=useState({a:true,b:true,c:false,d:false});const T=(k,l)=><div className="flex justify-between items-center py-2.5 text-sm"><span>{l}</span><Tog on={s[k]} set={v=>set({...s,[k]:v})} label={l}/></div>;
+return <div className="page"><H t="Profile & settings"/><div className="grid md:grid-cols-2 gap-5">
+<Card><div className="flex items-center gap-4"><div className="w-16 h-16 rounded-full bg-burg text-beige grid place-items-center font-serif text-2xl">A</div><div><h3 className="text-xl font-semibold">Asha Verma</h3><p className="text-sm text-royal/60">asha@example.com</p></div></div><label className="block text-sm mt-5">Display name<input defaultValue="Asha" className="mt-1 w-full rounded-xl bg-beige border border-royal/20 px-3 py-2"/></label><Btn c="mt-4">Save</Btn></Card>
+<Card><h3 className="font-semibold mb-1">Notifications</h3>{T('a','Daily check-in reminder')}{T('b','Event reminders')}<h3 className="font-semibold mt-4 mb-1">Privacy</h3>{T('c','Use data to personalise insights')}{T('d','Share anonymous usage')}
+<h3 className="font-semibold mt-4 mb-1">Connected devices</h3><p className="text-sm text-royal/70">None connected (simulated data in use).</p><div className="flex gap-2 mt-4"><Btn v="o">Export my data</Btn><Btn v="b">Delete account</Btn></div></Card></div></div>}
+
+/* ---------- shell ---------- */
+function App(){const [page,setPage]=useState(()=>location.hash.slice(1)||'landing');const [menu,setMenu]=useState(false);const [mood,setMood]=useState('');const [log,setLog]=useState([{d:'Yesterday',m:'Good',n:'Long walk'},{d:'Mon',m:'Okay',n:''}]);const [cur,setCur]=useState('');const [pl,setPl]=useState(false);const [pr,setPr]=useState(0);
+const go=p=>{setPage(p);setMenu(false);try{history.replaceState(null,'','#'+p)}catch(e){};scrollTo(0,0)};
+useEffect(()=>{if(!pl)return;const i=setInterval(()=>setPr(x=>(x+1)%100),600);return()=>clearInterval(i)},[pl]);
+if(page=='landing')return <Landing go={go}/>;
+const V={home:<Home go={go} mood={mood} setMood={setMood}/>,chat:<Chat/>,voice:<Voice/>,mood:<Mood log={log} setLog={setLog}/>,community:<Community/>,journeys:<Journeys/>,music:<Music cur={cur} setCur={setCur} pl={pl} setPl={setPl}/>,health:<Health/>,alerts:<Alerts/>,care:<Care/>,profile:<Profile/>};
+const Nav=()=><nav aria-label="Main" className="space-y-1">{NAV.map(([k,l,i])=><button key={k} onClick={()=>go(k)} aria-current={page==k?'page':undefined} className={'w-full flex items-center gap-3 rounded-2xl px-4 py-2.5 text-sm transition '+(page==k?'bg-royal text-beige':'hover:bg-royal/10')}><I n={i} s={18}/>{l}</button>)}</nav>;
+return <div className="min-h-screen lg:flex">
+<aside className="hidden lg:block w-64 shrink-0 p-5 border-r border-royal/10 sticky top-0 h-screen overflow-y-auto"><button onClick={()=>go('landing')} className="font-serif text-2xl font-semibold mb-6 block">KAWA</button><Nav/></aside>
+<header className="lg:hidden flex items-center justify-between px-5 py-3 border-b border-royal/10 sticky top-0 bg-beige z-30"><button onClick={()=>go('landing')} className="font-serif text-xl font-semibold">KAWA</button><button aria-label="Menu" onClick={()=>setMenu(!menu)}><I n={menu?'x':'menu'}/></button></header>
+{menu&&<div className="lg:hidden fixed inset-0 top-[53px] bg-beige z-20 p-5 overflow-y-auto"><Nav/></div>}
+<main className="flex-1 px-5 md:px-10 py-8 pb-28 max-w-5xl" key={page}>{V[page]||V.home}</main>
+{cur&&<div className="fixed bottom-3 left-3 right-3 lg:left-72 z-30 bg-royal text-beige rounded-full px-4 py-2.5 flex items-center gap-3 shadow-xl" style={{marginBottom:'env(safe-area-inset-bottom,0px)'}}><button aria-label={pl?'Pause':'Play'} onClick={()=>setPl(!pl)} className="w-9 h-9 rounded-full bg-beige text-royal grid place-items-center"><I n={pl?'pause':'play'} s={14}/></button><div className="flex-1 min-w-0"><p className="text-sm truncate">{cur} <span className="opacity-60 text-xs">· simulated</span></p><div className="h-1 rounded-full bg-beige/25 mt-1"><div className="h-1 rounded-full bg-beige" style={{width:pr+'%'}}/></div></div><button aria-label="Close player" onClick={()=>{setCur('');setPl(false)}}><I n="x" s={16}/></button></div>}
+</div>}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script></body></html>
